@@ -30,7 +30,7 @@ const Navbar = () => {
         onClick={() => navigate("/")}
         className="text-2xl font-bold cursor-pointer hover:text-blue-200 transition"
       >
-        E-Commerce
+        Pipe
       </h1>
 
       <div className="flex items-center gap-6">
