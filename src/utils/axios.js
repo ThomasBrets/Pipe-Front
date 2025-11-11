@@ -1,6 +1,6 @@
 import axios from "axios";
 const BACK_URL = import.meta.env.VITE_BACK_URL;
-console.log(BACK_URL); // http://localhost:3000/api
+console.log(BACK_URL); 
 
 
 const api = axios.create({

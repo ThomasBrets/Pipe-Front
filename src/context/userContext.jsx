@@ -6,7 +6,7 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [products, setProducts] = useState(null);
-  const [loading, setLoading] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // 1️⃣ Cargar usuario primero
@@ -45,7 +45,7 @@ export const UserProvider = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ user, setUser, products, setProducts }}
+      value={{ user, setUser, products, setProducts, loading }}
     >
       {children}
     </UserContext.Provider>

@@ -12,8 +12,10 @@
     console.log("PRODUCTS", products);
     console.log("USER", user);
 
-  if (!user || !products) return <p className="text-center mt-10">Cargando...</p>;
-    if (error) return <p className="text-center text-red-500 mt-6">{error}</p>;
+if (loading) return <p className="text-center mt-10">Cargando usuario...</p>;
+if (error) return <p className="text-center text-red-500 mt-6">{error}</p>;
+if (!products) return <p className="text-center mt-10">Cargando productos...</p>;
+
 
     return (
       <div className="min-h-screen bg-gray-50 py-10 px-6">
