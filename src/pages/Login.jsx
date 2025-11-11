@@ -39,15 +39,15 @@ const Login = () => {
 
       // 🔹 Redirige al home o dashboard
       setTimeout(() => {
-        navigate("/");
-      }, 500);
+        window.location.href = "/";
+      }, 300);
     } catch (error) {
       console.error(
         "❌ Error al iniciar sesión:",
         error.response?.data || error
       );
       setError(error.response?.data?.error || "Error al iniciar sesión");
-    }finally {
+    } finally {
       // 🔹 Siempre se ejecuta, éxito o error → detiene el loading
       setIsLoading(false);
     }
