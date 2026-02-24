@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { sileo } from "sileo";
-import { FaSearch, FaTrash, FaPlus, FaBox, FaEdit } from "react-icons/fa";
+import { FaSearch, FaTrash, FaPlus, FaBox, FaUsers } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import api from "../utils/axios";
 import { useUser } from "../context/userContext";
 import Button from "../components/ui/Button";
@@ -22,6 +23,7 @@ const emptyForm = {
 };
 
 const AdminProducts = () => {
+  const navigate = useNavigate();
   const { setProducts: setContextProducts } = useUser();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -134,10 +136,16 @@ const AdminProducts = () => {
             </div>
           </div>
 
-          <Button onClick={() => setShowCreateModal(true)}>
-            <FaPlus className="mr-2 text-xs" />
-            Nuevo producto
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="secondary" size="sm" onClick={() => navigate("/admin/users")}>
+              <FaUsers className="mr-2 text-xs" />
+              Gestión de usuarios
+            </Button>
+            <Button onClick={() => setShowCreateModal(true)}>
+              <FaPlus className="mr-2 text-xs" />
+              Nuevo producto
+            </Button>
+          </div>
         </div>
 
         {/* Buscador */}

@@ -116,7 +116,7 @@ const Navbar = () => {
 
                     {user.role === "admin" && (
                       <button
-                        onClick={() => { navigate("/admin/products"); setIsDropdownOpen(false); }}
+                        onClick={() => { navigate("/admin/users"); setIsDropdownOpen(false); }}
                         className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
                       >
                         <FaShieldAlt className="text-xs text-indigo-400" />
@@ -200,7 +200,7 @@ const Navbar = () => {
 
           {user?.role === "admin" && (
             <button
-              onClick={() => { navigate("/admin/products"); setIsMenuOpen(false); }}
+              onClick={() => { navigate("/admin/users"); setIsMenuOpen(false); }}
               className="flex items-center gap-2 w-full text-left text-white hover:text-indigo-200 py-2 text-sm transition-colors duration-150"
             >
               <FaShieldAlt className="text-xs" /> Panel Admin

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { sileo } from "sileo";
-import { FaSearch, FaTrash, FaShieldAlt, FaUser, FaUsers } from "react-icons/fa";
+import { FaSearch, FaTrash, FaShieldAlt, FaUser, FaUsers, FaBox } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import api from "../utils/axios";
 import { useUser } from "../context/userContext";
 import Button from "../components/ui/Button";
@@ -9,11 +10,12 @@ import Badge from "../components/ui/Badge";
 import Modal from "../components/ui/Modal";
 
 const AdminUsers = () => {
+  const navigate = useNavigate();
   const { user: currentUser } = useUser();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [deleteTarget, setDeleteTarget] = useState(null); // user object to delete
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchUsers = async () => {
@@ -66,18 +68,26 @@ const AdminUsers = () => {
       <div className="max-w-5xl mx-auto">
 
         {/* Header */}
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center">
-            <FaUsers className="text-indigo-600 dark:text-indigo-400" />
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center">
+              <FaUsers className="text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                Panel de Administración
+              </h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Gestión de usuarios
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-              Panel de Administración
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Gestión de usuarios registrados
-            </p>
-          </div>
+
+          {/* Navegación entre secciones admin */}
+          <Button variant="secondary" size="sm" onClick={() => navigate("/admin/products")}>
+            <FaBox className="mr-2 text-xs" />
+            Gestión de productos
+          </Button>
         </div>
 
         {/* Buscador */}
@@ -92,7 +102,7 @@ const AdminUsers = () => {
           />
         </div>
 
-        {/* Tabla / Lista */}
+        {/* Lista */}
         {loading ? (
           <div className="flex items-center justify-center py-24">
             <p className="text-gray-400 animate-pulse">Cargando usuarios...</p>
@@ -114,7 +124,6 @@ const AdminUsers = () => {
               <span className="col-span-2 text-right">Acciones</span>
             </div>
 
-            {/* Filas */}
             <AnimatePresence>
               {filteredUsers.map((u, idx) => (
                 <motion.div
@@ -124,9 +133,7 @@ const AdminUsers = () => {
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.2 }}
                   className={`grid grid-cols-12 gap-4 px-6 py-4 items-center ${
-                    idx < filteredUsers.length - 1
-                      ? "border-b dark:border-gray-700"
-                      : ""
+                    idx < filteredUsers.length - 1 ? "border-b dark:border-gray-700" : ""
                   }`}
                 >
                   {/* Nombre + avatar */}
@@ -199,7 +206,7 @@ const AdminUsers = () => {
         )}
       </div>
 
-      {/* Modal de confirmación para eliminar */}
+      {/* Modal de confirmación */}
       <Modal
         isOpen={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
@@ -214,17 +221,10 @@ const AdminUsers = () => {
           . Esta acción no se puede deshacer.
         </p>
         <div className="flex justify-end gap-3">
-          <Button
-            variant="secondary"
-            onClick={() => setDeleteTarget(null)}
-          >
+          <Button variant="secondary" onClick={() => setDeleteTarget(null)}>
             Cancelar
           </Button>
-          <Button
-            variant="danger"
-            isLoading={isDeleting}
-            onClick={handleDelete}
-          >
+          <Button variant="danger" isLoading={isDeleting} onClick={handleDelete}>
             Eliminar
           </Button>
         </div>
