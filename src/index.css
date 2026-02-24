@@ -3,6 +3,18 @@
 /* Tailwind v4: habilita dark mode con estrategia de clase */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Fix viewport iOS Safari: 100vh no incluye la barra de navegación del browser.
+   dvh (dynamic viewport height) se ajusta automáticamente cuando aparece/desaparece. */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.min-h-screen {
+  min-height: 100dvh;
+}
+
 /* Transición suave al cambiar de tema */
 html {
   transition: background-color 0.25s ease, color 0.25s ease;
