@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { sileo } from "sileo";
 import api from "../utils/axios";
+import { useUser } from "../context/userContext";
 
 const AddToCartButton = ({ cartId, productId }) => {
+  const { refreshCart } = useUser();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleAddToCart = async (e) => {
@@ -17,6 +19,8 @@ const AddToCartButton = ({ cartId, productId }) => {
         title: "¡Agregado al carrito!",
         description: "El producto fue agregado correctamente",
       });
+      // Actualiza el badge del Navbar y el estado global del carrito
+      refreshCart();
     } catch (error) {
       sileo.error({
         title: "Error al agregar",

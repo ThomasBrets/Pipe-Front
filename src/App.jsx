@@ -7,7 +7,7 @@ import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
-import AdminUsers from "./pages/AdminUsers";
+import AdminProducts from "./pages/AdminProducts";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminRoute from "./components/AdminRoute";
 import ProductDetail from "./pages/ProductDetail";
@@ -19,7 +19,8 @@ function App() {
     location.pathname === "/auth/register";
   return (
     <div className="bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors duration-300">
-      <Toaster position="top-right" />
+      {/* offset top: empuja los toasts 72px para que no queden tapados por la navbar fija (h-16 = 64px + 8px de aire) */}
+      <Toaster position="top-right" offset={{ top: 72 }} />
       {!hideNavbar && <Navbar />}
       <main className={!hideNavbar ? "pt-16" : ""}>
         <Routes>
@@ -56,11 +57,11 @@ function App() {
             }
           />
           <Route
-            path="/admin/users"
+            path="/admin/products"
             element={
               <PrivateRoute>
                 <AdminRoute>
-                  <AdminUsers />
+                  <AdminProducts />
                 </AdminRoute>
               </PrivateRoute>
             }

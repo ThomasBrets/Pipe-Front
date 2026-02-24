@@ -156,7 +156,7 @@ const Home = () => {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-2.5 rounded-xl border dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="pl-3 pr-8 py-2.5 rounded-xl border dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>

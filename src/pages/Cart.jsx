@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaShoppingCart, FaTrash } from "react-icons/fa";
@@ -13,6 +13,7 @@ const Cart = () => {
   const { cartLoading } = useUser();
   const {
     cart,
+    refreshCart,
     updateQuantity,
     removeProduct,
     clearCart,
@@ -22,6 +23,12 @@ const Cart = () => {
   } = useCart();
 
   const [showClearModal, setShowClearModal] = useState(false);
+
+  // Refresca el carrito al entrar a la página para asegurarse de mostrar
+  // los ítems más recientes (ej: productos agregados desde Home o ProductDetail)
+  useEffect(() => {
+    refreshCart();
+  }, [refreshCart]);
 
   /**
    * total se calcula del cart que viene del context (vía useCart).
