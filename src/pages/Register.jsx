@@ -1,104 +1,201 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import PasswordInput from "../components/PasswordInput";
-import api from "../utils/axios";
+import { useState, useCallback } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { FaEnvelope, FaLock, FaUser, FaEye, FaEyeSlash, FaCalendarAlt } from "react-icons/fa";
 import { validateEmail } from "../utils/helper";
+import { useAuth } from "../hooks/useAuth";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
 
 const Register = () => {
-  const [first_name, setFirst_name] = useState("");
-  const [last_name, setLast_name] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [age, setAge] = useState("");
+  const { register, isLoading } = useAuth();
+
+  /**
+   * Agrupamos todos los campos del form en un solo objeto en lugar de
+   * múltiples useState individuales porque:
+   * 1. Reduce la cantidad de state declarations (5 → 1)
+   * 2. La función `handleChange` es reutilizable para cualquier campo
+   * 3. Facilita enviar el form completo a la API (ya es un objeto)
+   */
+  const [form, setForm] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    age: "",
+    password: "",
+  });
   const [isAdmin, setIsAdmin] = useState(false);
-  const [error, setError] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [touched, setTouched] = useState({});
 
-    const navigate = useNavigate();
+  // Factory function: genera un handler de onChange para cualquier campo del form
+  const handleChange = (field) => (e) =>
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
-    const handleRegister = async (e) => {
-    e.preventDefault();
-    setError(""); // Limpiar errores
-
-    try {
-      const response = await api.post("/auth/register", {
-        first_name: first_name,
-        last_name: last_name,
-        email,
-        age: Number(age),
-        password,
-        role: isAdmin ? "admin" : "user",
-      });
-
-      console.log("✅ Registro exitoso:", response.data);
-      navigate("/auth/login"); // Redirige al login
-    } catch (err) {
-      console.error("❌ Error en registro:", err.response?.data || err);
-      setError(err.response?.data?.error || "Error al registrarse");
-    }
+  const handleBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
-  return (<div className="flex items-center justify-center mt-20">
-      <div className="w-96 border rounded bg-white px-7 py-10 shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Registro</h2>
-        <form onSubmit={handleRegister} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Nombre"
-            value={first_name}
-            onChange={(e) => setFirst_name(e.target.value)}
-            className="w-full bg-transparent text-sm outline-none input-box border rounded px-3 py-2 mb-3"
-          />
-          <input
-            type="text"
-            placeholder="Apellido"
-            value={last_name}
-            onChange={(e) => setLast_name(e.target.value)}
-            className="w-full bg-transparent text-sm outline-none input-box border rounded px-3 py-2 mb-3"
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-transparent text-sm outline-none input-box border rounded px-3 py-2 mb-3"
-          />
-          <input
-            type="number"
-            placeholder="Edad"
-            value={age}
-            onChange={(e) => setAge(e.target.value)}
-            className="w-full bg-transparent text-sm outline-none input-box border rounded px-3 py-2 mb-3"
-          />
-          <PasswordInput
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+  const validate = useCallback(() => {
+    const errors = {};
+    if (!form.first_name.trim()) errors.first_name = "El nombre es requerido";
+    if (!form.last_name.trim()) errors.last_name = "El apellido es requerido";
+    if (!validateEmail(form.email)) errors.email = "Ingresá un email válido";
+    if (!form.age) errors.age = "La edad es requerida";
+    else if (Number(form.age) < 18) errors.age = "Debés ser mayor de 18 años";
+    if (!form.password) errors.password = "La contraseña es requerida";
+    else if (form.password.length < 6) errors.password = "Mínimo 6 caracteres";
+    return errors;
+  }, [form]);
 
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="admin"
-              checked={isAdmin}
-              onChange={(e) => setIsAdmin(e.target.checked)}
-            />
-            <label htmlFor="admin" className="text-sm">Admin?</label>
+  const errors = validate();
+  const hasErrors = Object.keys(errors).length > 0;
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    // Marcar todos los campos como tocados para revelar todos los errores
+    setTouched({
+      first_name: true,
+      last_name: true,
+      email: true,
+      age: true,
+      password: true,
+    });
+
+    if (hasErrors) return;
+
+    await register({
+      first_name: form.first_name,
+      last_name: form.last_name,
+      email: form.email,
+      age: Number(form.age),
+      password: form.password,
+      role: isAdmin ? "admin" : "user",
+    });
+  };
+
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 px-4 py-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="w-full max-w-sm"
+      >
+        <div className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-2xl shadow-xl p-8">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-full mb-3">
+              <span className="text-2xl">🛍️</span>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+              Crear cuenta
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              Unite a Pipe Store hoy
+            </p>
           </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <form onSubmit={handleRegister} className="space-y-3">
+            {/* Nombre y apellido en grid de 2 columnas */}
+            <div className="grid grid-cols-2 gap-3">
+              <Input
+                label="Nombre"
+                placeholder="Juan"
+                value={form.first_name}
+                onChange={handleChange("first_name")}
+                onBlur={() => handleBlur("first_name")}
+                icon={FaUser}
+                error={touched.first_name ? errors.first_name : undefined}
+              />
+              <Input
+                label="Apellido"
+                placeholder="Pérez"
+                value={form.last_name}
+                onChange={handleChange("last_name")}
+                onBlur={() => handleBlur("last_name")}
+                icon={FaUser}
+                error={touched.last_name ? errors.last_name : undefined}
+              />
+            </div>
 
-          <button type="submit" className="btn-primary w-full">
-            Crear cuenta
-          </button>
+            <Input
+              label="Email"
+              type="email"
+              placeholder="tu@email.com"
+              value={form.email}
+              onChange={handleChange("email")}
+              onBlur={() => handleBlur("email")}
+              icon={FaEnvelope}
+              error={touched.email ? errors.email : undefined}
+            />
 
-          <p className="text-sm text-center mt-3">
-            ¿Ya tienes cuenta?{" "}
-            <Link to="/auth/login" className="text-primary underline">
-              Inicia sesión
+            <Input
+              label="Edad"
+              type="number"
+              placeholder="18"
+              value={form.age}
+              onChange={handleChange("age")}
+              onBlur={() => handleBlur("age")}
+              icon={FaCalendarAlt}
+              error={touched.age ? errors.age : undefined}
+            />
+
+            <Input
+              label="Contraseña"
+              type={showPassword ? "text" : "password"}
+              placeholder="Mínimo 6 caracteres"
+              value={form.password}
+              onChange={handleChange("password")}
+              onBlur={() => handleBlur("password")}
+              icon={FaLock}
+              rightIcon={showPassword ? FaEyeSlash : FaEye}
+              onRightIconClick={() => setShowPassword((prev) => !prev)}
+              error={touched.password ? errors.password : undefined}
+            />
+
+            <div className="flex items-center gap-2 pt-1">
+              <input
+                type="checkbox"
+                id="admin"
+                checked={isAdmin}
+                onChange={(e) => setIsAdmin(e.target.checked)}
+                className="rounded border-gray-300 dark:border-gray-600 accent-indigo-600"
+              />
+              <label
+                htmlFor="admin"
+                className="text-sm text-gray-600 dark:text-gray-400 cursor-pointer"
+              >
+                Registrarme como Admin
+              </label>
+            </div>
+
+            <Button
+              type="submit"
+              fullWidth
+              size="lg"
+              isLoading={isLoading}
+              disabled={isLoading}
+              className="mt-2"
+            >
+              Crear cuenta
+            </Button>
+          </form>
+
+          <p className="text-sm text-center mt-5 text-gray-500 dark:text-gray-400">
+            ¿Ya tenés cuenta?{" "}
+            <Link
+              to="/auth/login"
+              className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline"
+            >
+              Iniciá sesión
             </Link>
           </p>
-        </form>
-      </div>
-    </div>)
+        </div>
+      </motion.div>
+    </div>
+  );
 };
 
 export default Register;

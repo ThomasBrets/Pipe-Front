@@ -1,182 +1,225 @@
-import React, { useEffect, useState } from "react";
-import api from "../utils/axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaShoppingCart, FaTrash } from "react-icons/fa";
 import ps5 from "../assets/ps5.jpeg";
 import { useUser } from "../context/userContext";
+import { useCart } from "../hooks/useCart";
+import Button from "../components/ui/Button";
+import Modal from "../components/ui/Modal";
 
 const Cart = () => {
-  const [cart, setCart] = useState(null);
-  const [total, setTotal] = useState(0);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const { user } = useUser();
+  const navigate = useNavigate();
+  const { cartLoading } = useUser();
+  const {
+    cart,
+    updateQuantity,
+    removeProduct,
+    clearCart,
+    cartPurchase,
+    isClearing,
+    isPurchasing,
+  } = useCart();
 
-  //! Calcular total
-  const calculateTotal = (cartData) => {
-    const totalAmount = cartData.products.reduce((acc, item) => {
-      return acc + item.product.price * item.quantity;
-    }, 0);
-    setTotal(totalAmount);
+  const [showClearModal, setShowClearModal] = useState(false);
+
+  /**
+   * total se calcula del cart que viene del context (vía useCart).
+   * Cuando cart cambia (refreshCart), este cálculo se re-ejecuta automáticamente.
+   * No necesitamos useMemo acá porque useCart ya garantiza que cart es estable.
+   */
+  const total = cart?.products
+    ? cart.products.reduce(
+        (acc, item) => acc + item.product.price * item.quantity,
+        0
+      )
+    : 0;
+
+  const handleClearCart = async () => {
+    await clearCart();
+    setShowClearModal(false);
   };
 
-  //! Obtener carrito
-  const getCart = async () => {
-    try {
-      const cartId = user.cart;
-      const cartRes = await api.get(`/users/carts/${cartId}`);
-      setCart(cartRes.data);
-      calculateTotal(cartRes.data);
-    } catch (err) {
-      console.error("❌ Error al obtener el carrito:", err);
-      setError("No se pudo cargar el carrito");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // ── Estado de carga inicial (context todavía fetcheando el cart) ──
+  if (cartLoading) return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <p className="text-gray-400 animate-pulse">Cargando carrito...</p>
+    </div>
+  );
 
-  //! Actualizar cantidad
-  const updateQuantity = async (pid, newQuantity) => {
-    try {
-      //Si el producto baja de 0 lo elimina
-      if (newQuantity <= 0) {
-        await removeProduct(pid);
-        return;
-      }
-      await api.put(`/users/carts/${cart._id}/products/${pid}`, {
-        quantity: newQuantity,
-      });
-      getCart(); // Refrescamos el carrito
-    } catch (err) {
-      console.error("❌ Error al actualizar cantidad:", err);
-    }
-  };
-
-  //! Eliminar producto
-  const removeProduct = async (pid) => {
-    try {
-      await api.delete(`/users/carts/${cart._id}/products/${pid}`);
-      getCart();
-    } catch (err) {
-      console.error("❌ Error al eliminar producto:", err);
-    }
-  };
-
-  //! Vaciar carrito
-  const clearCart = async () => {
-    try {
-      await api.delete(`/users/carts/${cart._id}`);
-      getCart();
-    } catch (err) {
-      console.error("❌ Error al vaciar el carrito:", err);
-    }
-  };
-
-  //!Purchase
-  const cartPurchase = async () => {
-    try {
-      await api.post(`/users/carts/${cart._id}/purchase`);
-      alert("Compra realizada con éxito");
-      getCart();
-    } catch (err) {
-      console.error("Error al realizar la compra", err);
-      alert("Hubo un error al procesar la compra.");
-    }
-  };
-
-  useEffect(() => {
-    if (user && user.cart) {
-      getCart();
-    }
-  }, [user]);
-
-  if (loading || !cart)
+  // ── Empty state ──
+  if (!cart || cart.products.length === 0) {
     return (
-      <p className="text-center mt-6 text-gray-600">Cargando carrito...</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center gap-4 px-4">
+        <FaShoppingCart className="text-7xl text-gray-200 dark:text-gray-700" />
+        <h2 className="text-xl font-semibold text-gray-600 dark:text-gray-400">
+          Tu carrito está vacío
+        </h2>
+        <p className="text-sm text-gray-400 dark:text-gray-500">
+          ¡Explorá los productos y agregá algo!
+        </p>
+        <Button onClick={() => navigate("/")}>Ver productos</Button>
+      </div>
     );
-  if (error) return <p className="text-center text-red-500 mt-6">{error}</p>;
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-6">
-      <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
-        🛍️ Tu carrito
-      </h1>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8 text-gray-800 dark:text-gray-100">
+          Tu carrito
+        </h1>
 
-      {cart.products.length === 0 ? (
-        <p className="text-center text-gray-600">Tu carrito está vacío.</p>
-      ) : (
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow p-6">
-          {cart.products.map((item) => (
-            <div
-              key={item.product._id}
-              className="flex items-center justify-between border-b py-4"
-            >
-              <div className="flex items-center gap-4">
-                <img
-                  src={item.product.img || ps5}
-                  alt={item.product.title}
-                  className="w-20 h-20 object-contain bg-white rounded-lg"
-                />
-                <div>
-                  <h2 className="font-semibold text-lg">
-                    {item.product.title}
-                  </h2>
-                  <p className="text-gray-500">${item.product.price} c/u</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          {/* ── Lista de productos ── */}
+          <div className="lg:col-span-2 space-y-3">
+            {/*
+             * AnimatePresence permite animar la SALIDA de elementos.
+             * React normalmente desmonta componentes instantáneamente.
+             * AnimatePresence "retiene" el elemento mientras ejecuta la
+             * animación `exit`, luego lo desmonta.
+             */}
+            <AnimatePresence>
+              {cart.products.map((item) => (
+                <motion.div
+                  key={item.product._id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 80 }}
+                  transition={{ duration: 0.25 }}
+                  className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-2xl p-4 flex items-center gap-4"
+                >
+                  <img
+                    src={item.product.img || ps5}
+                    alt={item.product.title}
+                    className="w-16 h-16 object-contain bg-gray-50 dark:bg-gray-700 rounded-lg shrink-0"
+                  />
+
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-800 dark:text-gray-100 truncate text-sm">
+                      {item.product.title}
+                    </h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">
+                      ${item.product.price} c/u
+                    </p>
+                  </div>
+
+                  {/* Controles de cantidad */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
+                      className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm cursor-pointer"
+                    >
+                      -
+                    </button>
+                    <span className="w-6 text-center text-sm font-semibold dark:text-gray-100">
+                      {item.quantity}
+                    </span>
+                    <button
+                      onClick={() => updateQuantity(item.product._id, item.quantity + 1)}
+                      className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm cursor-pointer"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  {/* Subtotal del item */}
+                  <p className="font-bold text-indigo-600 dark:text-indigo-400 w-20 text-right text-sm shrink-0">
+                    ${item.product.price * item.quantity}
+                  </p>
+
+                  {/* Botón eliminar */}
+                  <button
+                    onClick={() => removeProduct(item.product._id)}
+                    className="text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0 cursor-pointer"
+                  >
+                    <FaTrash />
+                  </button>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {/* ── Sidebar: resumen del pedido ── */}
+          {/*
+           * lg:sticky lg:top-20: el sidebar se "pega" al top de la pantalla
+           * mientras el usuario hace scroll en la lista de productos.
+           * top-20 = 80px para dejar espacio a la navbar fija (64px + 16px gap).
+           */}
+          <div className="lg:sticky lg:top-20 h-fit">
+            <div className="bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-2xl p-6 space-y-4">
+              <h2 className="font-semibold text-gray-800 dark:text-gray-100">
+                Resumen del pedido
+              </h2>
+
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                  <span>Subtotal</span>
+                  <span>${total}</span>
+                </div>
+                <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                  <span>Envío</span>
+                  <span className={total > 50000 ? "text-green-500 font-medium" : ""}>
+                    {total > 50000 ? "¡Gratis!" : "$2.500"}
+                  </span>
+                </div>
+                <div className="border-t dark:border-gray-700 pt-3 flex justify-between font-bold text-base dark:text-gray-100">
+                  <span>Total</span>
+                  <span className="text-indigo-600 dark:text-indigo-400">
+                    ${total > 50000 ? total : total + 2500}
+                  </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() =>
-                    updateQuantity(item.product._id, item.quantity - 1)
-                  }
-                  className="bg-gray-200 px-2 rounded hover:bg-gray-300"
-                >
-                  -
-                </button>
-                <span className="font-semibold">{item.quantity}</span>
-                <button
-                  onClick={() =>
-                    updateQuantity(item.product._id, item.quantity + 1)
-                  }
-                  className="bg-gray-200 px-2 rounded hover:bg-gray-300"
-                >
-                  +
-                </button>
+              <Button
+                onClick={cartPurchase}
+                isLoading={isPurchasing}
+                fullWidth
+                size="lg"
+              >
+                Finalizar compra
+              </Button>
 
-                <p className="font-bold text-blue-600 w-20 text-right">
-                  ${item.product.price * item.quantity}
-                </p>
-
-                <button
-                  onClick={() => removeProduct(item.product._id)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  🗑️
-                </button>
-              </div>
-            </div>
-          ))}
-
-          <div className="text-right mt-6 border-t pt-4">
-            <h2 className="text-xl font-bold">
-              Total: <span className="text-blue-600">${total}</span>
-            </h2>
-            <div className="mt-4 flex justify-end gap-3">
-              <button
-                onClick={clearCart}
-                className="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-400 transition"
+              <Button
+                onClick={() => setShowClearModal(true)}
+                variant="ghost"
+                fullWidth
+                size="sm"
               >
                 Vaciar carrito
-              </button>
-              <button
-                onClick={cartPurchase}
-                className=" bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-500 transition"
-              >
-                Comprar
-              </button>
+              </Button>
             </div>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Modal de confirmación para vaciar el carrito */}
+      <Modal
+        isOpen={showClearModal}
+        onClose={() => setShowClearModal(false)}
+        title="¿Vaciar el carrito?"
+        size="sm"
+      >
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+          Esta acción eliminará todos los productos. ¿Estás seguro?
+        </p>
+        <div className="flex justify-end gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setShowClearModal(false)}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="danger"
+            isLoading={isClearing}
+            onClick={handleClearCart}
+          >
+            Vaciar
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 };

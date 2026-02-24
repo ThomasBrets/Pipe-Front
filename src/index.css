@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+/* Tailwind v4: habilita dark mode con estrategia de clase */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Transición suave al cambiar de tema */
+html {
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
