@@ -77,13 +77,10 @@ export const UserProvider = ({ children }) => {
   }, [user?.cart]);
 
   // Permite re-fetchear el usuario sin full page reload (necesario en iOS Safari / ITP)
+  // Propaga el error para que el caller pueda reaccionar (ej: fallback en login)
   const refreshUser = useCallback(async () => {
-    try {
-      const res = await api.get("/users/current");
-      setUser(res.data);
-    } catch {
-      setUser(null);
-    }
+    const res = await api.get("/users/current");
+    setUser(res.data);
   }, []);
 
   return (

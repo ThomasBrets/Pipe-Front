@@ -24,9 +24,20 @@ export const useAuth = () => {
         title: "¡Bienvenido!",
         description: "Sesión iniciada correctamente",
       });
-      // Recarga el usuario en el contexto sin hacer full page reload.
-      // El full reload rompía la sesión en iOS Safari (ITP bloqueaba la cookie cross-site).
-      await refreshUser();
+
+      // DEBUG: ver qué devuelve login y si refreshUser funciona
+      try {
+        await refreshUser();
+        sileo.info({ title: "DEBUG", description: "refreshUser OK — navegando..." });
+      } catch (refreshErr) {
+        sileo.error({
+          title: "DEBUG refreshUser falló",
+          description: refreshErr?.message || String(refreshErr),
+        });
+        // Fallback: full reload como último recurso
+        window.location.href = "/products";
+        return;
+      }
       navigate("/products");
     } catch (error) {
       const msg = error.response?.data?.error || "Error al iniciar sesión";
