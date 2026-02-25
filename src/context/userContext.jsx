@@ -32,7 +32,8 @@ export const UserProvider = ({ children }) => {
 
     const fetchProducts = async () => {
       try {
-        const res = await api.get("/users/products?limit=10");
+        // limit=100 para cargar todos los productos y hacer paginación client-side
+        const res = await api.get("/users/products?limit=100");
         setProducts(res.data);
       } catch (err) {
         console.error("❌ Error al obtener productos:", err);

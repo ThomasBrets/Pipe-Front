@@ -16,7 +16,7 @@ const AdminRoute = ({ children }) => {
   );
 
   if (!user || user.role !== "admin") {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/products" replace />;
   }
 
   return children;

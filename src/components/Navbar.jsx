@@ -51,7 +51,7 @@ const Navbar = () => {
 
           {/* ── Logo ── */}
           <Link
-            to="/"
+            to="/products"
             className="flex items-center gap-2 text-white hover:text-indigo-200 transition-colors duration-200"
           >
             <FaShoppingBag className="text-2xl" />
@@ -185,7 +185,7 @@ const Navbar = () => {
           )}
 
           <button
-            onClick={() => { navigate("/"); setIsMenuOpen(false); }}
+            onClick={() => { navigate("/products"); setIsMenuOpen(false); }}
             className="flex items-center w-full text-left text-white hover:text-indigo-200 py-2 text-sm transition-colors duration-150"
           >
             Productos

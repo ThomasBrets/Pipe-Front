@@ -24,7 +24,7 @@ export const useAuth = () => {
       });
       // Full reload para que UserContext re-fetche el usuario con su sesión nueva.
       setTimeout(() => {
-        window.location.href = "/";
+        window.location.href = "/products";
       }, 800);
     } catch (error) {
       const msg = error.response?.data?.error || "Error al iniciar sesión";

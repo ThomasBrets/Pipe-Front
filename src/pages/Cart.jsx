@@ -65,7 +65,7 @@ const Cart = () => {
         <p className="text-sm text-gray-400 dark:text-gray-500">
           ¡Explorá los productos y agregá algo!
         </p>
-        <Button onClick={() => navigate("/")}>Ver productos</Button>
+        <Button onClick={() => navigate("/products")}>Ver productos</Button>
       </div>
     );
   }
