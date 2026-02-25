@@ -13,7 +13,7 @@ import { useUser } from "../context/userContext";
  */
 export const useAuth = () => {
   const navigate = useNavigate();
-  const { refreshUser } = useUser();
+  const { refreshUser, setUser } = useUser();
   const [isLoading, setIsLoading] = useState(false);
 
   const login = async ({ email, password }) => {
@@ -37,8 +37,9 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       await api.post("/auth/logout");
+      setUser(null);
       sileo.info({ title: "Sesión cerrada", description: "¡Hasta pronto!" });
-      setTimeout(() => navigate("/"), 500);
+      navigate("/");
     } catch {
       sileo.error({ title: "Error al cerrar sesión" });
     }
