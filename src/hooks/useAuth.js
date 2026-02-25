@@ -13,7 +13,7 @@ import { useUser } from "../context/userContext";
  */
 export const useAuth = () => {
   const navigate = useNavigate();
-  const { refreshUser, setUser } = useUser();
+  const { refreshUser } = useUser();
   const [isLoading, setIsLoading] = useState(false);
 
   const login = async ({ email, password }) => {
