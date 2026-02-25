@@ -24,20 +24,7 @@ export const useAuth = () => {
         title: "¡Bienvenido!",
         description: "Sesión iniciada correctamente",
       });
-
-      // DEBUG: ver qué devuelve login y si refreshUser funciona
-      try {
-        await refreshUser();
-        sileo.info({ title: "DEBUG", description: "refreshUser OK — navegando..." });
-      } catch (refreshErr) {
-        sileo.error({
-          title: "DEBUG refreshUser falló",
-          description: refreshErr?.message || String(refreshErr),
-        });
-        // Fallback: full reload como último recurso
-        window.location.href = "/products";
-        return;
-      }
+      await refreshUser();
       navigate("/products");
     } catch (error) {
       const msg = error.response?.data?.error || "Error al iniciar sesión";
@@ -51,7 +38,7 @@ export const useAuth = () => {
     try {
       await api.post("/auth/logout");
       sileo.info({ title: "Sesión cerrada", description: "¡Hasta pronto!" });
-      setTimeout(() => navigate("/auth/login"), 500);
+      setTimeout(() => navigate("/"), 500);
     } catch {
       sileo.error({ title: "Error al cerrar sesión" });
     }
