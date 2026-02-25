@@ -37,9 +37,7 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       await api.post("/auth/logout");
-      setUser(null);
-      sileo.info({ title: "Sesión cerrada", description: "¡Hasta pronto!" });
-      navigate("/");
+      window.location.href = "/";
     } catch {
       sileo.error({ title: "Error al cerrar sesión" });
     }
