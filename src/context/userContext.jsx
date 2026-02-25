@@ -76,6 +76,16 @@ export const UserProvider = ({ children }) => {
     }
   }, [user?.cart]);
 
+  // Permite re-fetchear el usuario sin full page reload (necesario en iOS Safari / ITP)
+  const refreshUser = useCallback(async () => {
+    try {
+      const res = await api.get("/users/current");
+      setUser(res.data);
+    } catch {
+      setUser(null);
+    }
+  }, []);
+
   return (
     <UserContext.Provider
       value={{
@@ -86,6 +96,7 @@ export const UserProvider = ({ children }) => {
         cart,
         setCart,
         refreshCart,
+        refreshUser,
         cartLoading,
         loading,
       }}

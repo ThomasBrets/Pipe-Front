@@ -110,14 +110,14 @@ const Navbar = () => {
                       onClick={() => { navigate("/profile"); setIsDropdownOpen(false); }}
                       className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
                     >
-                      <FaUser className="text-xs text-gray-400 dark:text-gray-500" />
+                      <FaUser className="text-xs cursor-pointer text-gray-400 dark:text-gray-500" />
                       Mi perfil
                     </button>
 
                     {user.role === "admin" && (
                       <button
                         onClick={() => { navigate("/admin/users"); setIsDropdownOpen(false); }}
-                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+                        className="w-full cursor-pointer flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
                       >
                         <FaShieldAlt className="text-xs text-indigo-400" />
                         Panel Admin
@@ -127,7 +127,7 @@ const Navbar = () => {
                     <div className="border-t border-gray-100 dark:border-gray-700">
                       <button
                         onClick={logout}
-                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150"
+                        className="w-full cursor-pointer flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150"
                       >
                         <FaSignOutAlt className="text-xs" />
                         Cerrar sesión

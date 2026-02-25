@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { sileo } from "sileo";
 import api from "../utils/axios";
+import { useUser } from "../context/userContext";
 
 /**
  * useAuth: encapsula las operaciones de autenticación.
@@ -12,6 +13,7 @@ import api from "../utils/axios";
  */
 export const useAuth = () => {
   const navigate = useNavigate();
+  const { refreshUser } = useUser();
   const [isLoading, setIsLoading] = useState(false);
 
   const login = async ({ email, password }) => {
@@ -22,10 +24,10 @@ export const useAuth = () => {
         title: "¡Bienvenido!",
         description: "Sesión iniciada correctamente",
       });
-      // Full reload para que UserContext re-fetche el usuario con su sesión nueva.
-      setTimeout(() => {
-        window.location.href = "/products";
-      }, 800);
+      // Recarga el usuario en el contexto sin hacer full page reload.
+      // El full reload rompía la sesión en iOS Safari (ITP bloqueaba la cookie cross-site).
+      await refreshUser();
+      navigate("/products");
     } catch (error) {
       const msg = error.response?.data?.error || "Error al iniciar sesión";
       sileo.error({ title: "Error al iniciar sesión", description: msg });

@@ -35,3 +35,14 @@ export const useDebounce = (value, delay = 300) => {
 
   return debouncedValue;
 };
+
+
+//  Usuario escribe "react" en 1 segundo
+
+// R     → espera 300ms... (el usuario sigue escribiendo)
+// Re    → cancela el anterior, espera 300ms...
+// Rea   → cancela el anterior, espera 300ms...
+// Reac  → cancela el anterior, espera 300ms...
+// React → cancela el anterior, espera 300ms... ✅ EJECUTA
+
+// Solo 1 filtrado después de que dejó de escribir!
