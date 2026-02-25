@@ -1,15 +1,16 @@
 import axios from "axios";
-const BACK_URL = import.meta.env.VITE_BACK_URL;
-console.log(BACK_URL); 
 
+// En producción (Vercel): usa "/api" → Vercel proxea a render.com (cookies same-site).
+// En local dev: VITE_BACK_URL apunta directo al backend.
+const BACK_URL = import.meta.env.VITE_BACK_URL || "/api";
 
 const api = axios.create({
-  baseURL: BACK_URL, // Base URL del backend
+  baseURL: BACK_URL,
   timeout: 10000,
   headers: {
-    "Content-Type": "application/json", // Header correcto para enviar JSON
+    "Content-Type": "application/json",
   },
-  withCredentials: true, // Permite el envío de cookies entre frontend y backend
+  withCredentials: true,
 });
 
 export default api;
