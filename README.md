@@ -1,6 +1,6 @@
 # Pipe — Frontend
 
-Frontend de la tienda e-commerce **Pipe**, desarrollado con React 19 + Vite + Tailwind CSS 4. Consume la [API de Pipe](https://github.com/tpessoa/pipe-api) desplegada en Render y está publicado en Vercel.
+Frontend de la tienda e-commerce **Pipe**, desarrollado con React 19 + Vite + Tailwind CSS 4. Consume la [API de Pipe](https://github.com/ThomasBrets/Pipe-api) desplegada en Render y está publicado en Vercel.
 
 **Demo:** https://pipe-front.vercel.app
 
@@ -54,8 +54,8 @@ Frontend de la tienda e-commerce **Pipe**, desarrollado con React 19 + Vite + Ta
 
 ```bash
 # 1. Clonar el repo
-git clone https://github.com/tpessoa/pipe-front.git
-cd pipe-front
+git clone https://github.com/ThomasBrets/Pipe-Front.git
+cd Pipe-Front
 
 # 2. Instalar dependencias
 npm install
@@ -121,4 +121,4 @@ En Vercel se usa un proxy configurado en `vercel.json` que reescribe `/api/*` ha
 
 ## Backend
 
-Repositorio de la API: [pipe-api](https://github.com/tpessoa/pipe-api) — desplegada en Render.
+Repositorio de la API: [Pipe-api](https://github.com/ThomasBrets/Pipe-api) — desplegada en Render.
