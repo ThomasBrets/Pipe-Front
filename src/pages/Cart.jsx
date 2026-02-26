@@ -103,46 +103,49 @@ const Cart = () => {
                     className="w-16 h-16 object-contain bg-gray-50 dark:bg-gray-700 rounded-lg shrink-0"
                   />
 
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-800 dark:text-gray-100 truncate text-sm">
-                      {item.product.title}
-                    </h3>
-                    <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">
-                      ${item.product.price} c/u
-                    </p>
+                  {/* Info + controles: columna en mobile, fila en sm+ */}
+                  <div className="flex-1 min-w-0 flex flex-col gap-2">
+                    {/* Fila superior: título + precio c/u a la izquierda, subtotal a la derecha */}
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-gray-800 dark:text-gray-100 truncate text-sm">
+                          {item.product.title}
+                        </h3>
+                        <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">
+                          ${item.product.price} c/u
+                        </p>
+                      </div>
+                      <p className="font-bold text-indigo-600 dark:text-indigo-400 text-sm shrink-0">
+                        ${item.product.price * item.quantity}
+                      </p>
+                    </div>
+
+                    {/* Fila inferior: controles de cantidad + botón eliminar */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
+                        className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm cursor-pointer"
+                      >
+                        -
+                      </button>
+                      <span className="w-6 text-center text-sm font-semibold dark:text-gray-100">
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() => updateQuantity(item.product._id, item.quantity + 1)}
+                        className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm cursor-pointer"
+                      >
+                        +
+                      </button>
+                      {/* Botón eliminar al extremo derecho de los controles */}
+                      <button
+                        onClick={() => removeProduct(item.product._id)}
+                        className="ml-auto text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 transition-colors cursor-pointer"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
                   </div>
-
-                  {/* Controles de cantidad */}
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
-                      className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm cursor-pointer"
-                    >
-                      -
-                    </button>
-                    <span className="w-6 text-center text-sm font-semibold dark:text-gray-100">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => updateQuantity(item.product._id, item.quantity + 1)}
-                      className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm cursor-pointer"
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  {/* Subtotal del item */}
-                  <p className="font-bold text-indigo-600 dark:text-indigo-400 w-20 text-right text-sm shrink-0">
-                    ${item.product.price * item.quantity}
-                  </p>
-
-                  {/* Botón eliminar */}
-                  <button
-                    onClick={() => removeProduct(item.product._id)}
-                    className="text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0 cursor-pointer"
-                  >
-                    <FaTrash />
-                  </button>
                 </motion.div>
               ))}
             </AnimatePresence>
