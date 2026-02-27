@@ -102,45 +102,44 @@ const Cart = () => {
                     alt={item.product.title}
                     className="w-16 h-16 object-contain bg-gray-50 dark:bg-gray-700 rounded-lg shrink-0"
                   />
-
                   {/* Info + controles: columna en mobile, fila en sm+ */}
-                  <div className="flex-1 min-w-0 flex flex-col gap-2">
-                    {/* Fila superior: título + precio c/u a la izquierda, subtotal a la derecha */}
+                  <div className="flex-1 min-w-0 flex flex-col gap-3">
+                    {/* Fila superior: título + subtotal */}
                     <div className="flex justify-between items-start gap-2">
-                      <div className="min-w-0">
-                        <h3 className="font-semibold text-gray-800 dark:text-gray-100 truncate text-sm">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold text-gray-800 dark:text-gray-100 text-sm sm:text-base">
                           {item.product.title}
                         </h3>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">
+                        <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1">
                           ${item.product.price} c/u
                         </p>
                       </div>
-                      <p className="font-bold text-indigo-600 dark:text-indigo-400 text-sm shrink-0">
+                      <p className="font-bold text-indigo-600 dark:text-indigo-400 text-sm sm:text-base shrink-0">
                         ${item.product.price * item.quantity}
                       </p>
                     </div>
 
                     {/* Fila inferior: controles de cantidad + botón eliminar */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 sm:gap-3">
                       <button
                         onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
-                        className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm cursor-pointer"
+                        className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-base sm:text-lg font-medium cursor-pointer"
                       >
                         -
                       </button>
-                      <span className="w-6 text-center text-sm font-semibold dark:text-gray-100">
+                      <span className="min-w-[2rem] text-center text-sm sm:text-base font-semibold dark:text-gray-100">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQuantity(item.product._id, item.quantity + 1)}
-                        className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm cursor-pointer"
+                        className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-base sm:text-lg font-medium cursor-pointer"
                       >
                         +
                       </button>
-                      {/* Botón eliminar al extremo derecho de los controles */}
+                      {/* Botón eliminar al extremo derecho */}
                       <button
                         onClick={() => removeProduct(item.product._id)}
-                        className="ml-auto text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 transition-colors cursor-pointer"
+                        className="ml-auto text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors cursor-pointer text-base sm:text-lg"
                       >
                         <FaTrash />
                       </button>
