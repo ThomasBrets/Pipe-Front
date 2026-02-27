@@ -58,7 +58,7 @@ export const useCart = () => {
 
   const cartPurchase = async () => {
     setIsPurchasing(true);
-    const purchasePromise = api.post(`/users/carts/${cart._id}/purchase`, null, { timeout: 60000 });
+    const purchasePromise = api.post(`/users/carts/${cart._id}/purchase`, undefined, { timeout: 60000 });
 
     sileo.promise(purchasePromise, {
       loading: { title: "Procesando compra..." },
