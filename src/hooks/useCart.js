@@ -58,25 +58,19 @@ export const useCart = () => {
 
   const cartPurchase = async () => {
     setIsPurchasing(true);
-    const purchasePromise = api.post(`/users/carts/${cart._id}/purchase`, undefined, { timeout: 60000 });
-
-    sileo.promise(purchasePromise, {
-      loading: { title: "Procesando compra..." },
-      success: {
+    try {
+      await api.post(`/users/carts/${cart._id}/purchase`, undefined, { timeout: 60000 });
+      sileo.success({
         title: "¡Compra exitosa!",
         description: "Revisá tu email de confirmación",
-      },
-      error: {
+        duration: 5000,
+      });
+      await refreshCart();
+    } catch {
+      sileo.error({
         title: "Error en la compra",
         description: "No se pudo procesar tu pedido",
-      },
-    });
-
-    try {
-      await purchasePromise;
-      refreshCart();
-    } catch {
-      // El error ya fue manejado por sileo.promise
+      });
     } finally {
       setIsPurchasing(false);
     }
